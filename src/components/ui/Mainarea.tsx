@@ -42,7 +42,6 @@ const MainContent: React.FC<{
   setTasks: (tasks: any[]) => void;
 }> = ({ tasks, eventId, userId, setTasks }) => {
   console.log("EventId: " + eventId, "UserId: " + userId);
-  const [submit1, setSubmit1] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -66,7 +65,7 @@ const MainContent: React.FC<{
           id: task._id,
           title: task.name,
           description: task.desc,
-          dueDate: task.updated_at,
+          dueDate: task.due_at,
           status: task.status,
         }));
         setTasks(formattedTasks);
@@ -80,7 +79,7 @@ const MainContent: React.FC<{
 
   useEffect(() => {
     fetchTasks(); 
-  }, [eventId, submit1]);
+  }, [eventId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -107,7 +106,7 @@ const MainContent: React.FC<{
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(taskToSubmit), // Use the new object
+        body: JSON.stringify(taskToSubmit),
       });
 
       if (response.ok) {
@@ -116,8 +115,8 @@ const MainContent: React.FC<{
           name: '', 
           desc: '', 
           due_at: '', 
-          event_id: eventId, // Reset with the current values
-          created_by: userId, // Reset with the current values
+          event_id: eventId,
+          created_by: userId,
           assigned_to: [] 
         });
         await fetchTasks(); // Refresh tasks after adding a new one
@@ -127,6 +126,27 @@ const MainContent: React.FC<{
     } catch (error) {
       console.error('Error creating task:', error);
     } 
+  };
+
+  const updateTask = async (id: string, newStatus: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/task/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ task_id: id, status: newStatus }), // Updated with task ID and status
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+  
+      await fetchTasks(); // Refresh tasks after updating
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
   };
 
   return (
@@ -244,13 +264,15 @@ const MainContent: React.FC<{
             [&::-webkit-scrollbar-thumb]:duration-200"
         >
           {tasks.map((task) => (
-            <Card
-              key={task.id}
-              title={task.title}
-              dueDate={new Date(task.dueDate).toLocaleDateString('en-GB')}
-              content={task.description}
-              status={task.status === 1 ? "Pending" : "Done"}
-            />
+           <Card
+           key={task.id}
+           title={task.title}
+           dueDate={new Date(task.dueDate).toLocaleDateString('en-GB')}
+           content={task.description}
+           updateTask={updateTask}
+           status={task.status} // Pass the numeric status directly
+           id={task.id}
+         />         
           ))}
         </div>
       </div>
