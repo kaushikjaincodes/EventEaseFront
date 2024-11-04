@@ -41,17 +41,29 @@ interface SidebarProps {
   setTasks: (tasks: any[]) => void; 
 }
 
+interface FormData {
+  name: string;
+  desc: string;
+  end_date: string;
+  user_id: string;
+  members: string[];
+}
+
 const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    dueDate: ''
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    desc: '',
+    end_date: '',
+    user_id: '',
+    members: [],
   });
 
   const [words, setWords] = useState(['EventEase']);
   const [events, setEvents] = useState<Event[]>([]);
+  const [submit, setSubmit] = useState(false);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (userName) {
       setWords((prevWords) => [...prevWords, "Hello " + userName + "!"]);
@@ -69,8 +81,30 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    setIsDialogOpen(false);
-    setFormData({ title: '', description: '', dueDate: '' });
+    try {
+      const response = await fetch('http://localhost:8080/api/event/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        setSubmit(!submit);
+        setIsDialogOpen(false);
+        setFormData({ 
+          name: '', 
+          desc: '', 
+          end_date: '', 
+          user_id: '', // Reset using userId to ensure correct ID is retained
+          members: [] 
+        });
+      } else {
+        console.error('Failed to create event:', response.status);
+      }
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
   };
 
   useEffect(() => {
@@ -94,6 +128,13 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
     };
 
     fetchEvents();
+  }, [userId, submit]);
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      user_id: userId
+    }));
   }, [userId]);
 
   const handleEventClick = async (eventId: string) => {
@@ -119,10 +160,11 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
     }
   };
 
-  function logout() {
+  const logout = () => {
     localStorage.removeItem("token");
     navigate("/");
-  }
+  };
+
   return (
     <div className="bg-black text-white w-64 h-screen flex flex-col relative group">
       <div className="text-2xl mb-5 mt-7">
@@ -136,43 +178,59 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="title" className="block mb-1">
+                <label htmlFor="name" className="block mb-1">
                   Event Title
                 </label>
                 <Input
                   type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
                 />
               </div>
-
               <div>
-                <label htmlFor="description" className="block mb-1">
+                <label htmlFor="desc" className="block mb-1">
                   Description
                 </label>
                 <Input
                   type="text"
-                  id="description"
-                  name="description"
-                  value={formData.description}
+                  id="desc"
+                  name="desc"
+                  value={formData.desc}
                   onChange={handleInputChange}
                   className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
                 />
               </div>
 
               <div>
-                <label htmlFor="dueDate" className="block mb-1">
+                <label htmlFor="end_date" className="block mb-1">
                   Date
                 </label>
                 <Input
                   type="date"
-                  id="dueDate"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  id="end_date"
+                  name="end_date"
+                  value={formData.end_date}
                   onChange={handleInputChange}
+                  className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="members" className="block mb-1">
+                  Members (comma-separated)
+                </label>
+                <Input
+                  type="text"
+                  id="members"
+                  name="members" 
+                  value={formData.members.join(', ')}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    members: e.target.value.split(',').map(member => member.trim())
+                  })} 
                   className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
                 />
               </div>
@@ -208,7 +266,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
         ))}
       </ul>
       <div className="p-2">
-        <Button className="bg-white text-black hover:bg-neutral-500 w-full" onClick={()=>{logout();}} >Logout</Button>
+        <Button className="bg-white text-black hover:bg-neutral-500 w-full" onClick={logout}>Logout</Button>
       </div>
     </div>
   );
