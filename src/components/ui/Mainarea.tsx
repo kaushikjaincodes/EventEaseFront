@@ -27,7 +27,8 @@ const Dialog: React.FC<{
   );
 };
 
-const MainContent: React.FC = () => {
+const MainContent: React.FC<{ tasks: { id: string; title: string; description: string; dueDate: string; status: number; }[] }> = ({ tasks }) => {
+ 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -51,21 +52,6 @@ const MainContent: React.FC = () => {
     setFormData({ title: '', description: '', dueDate: '' });
   };
 
-  const tasks = [
-    {
-      title: "Task 1",
-      dueDate: "2024-11-05",
-      status: "Pending",
-      content: "This is a brief description of Card 1's purpose.",
-    },
-    {
-      title: "Task 2",
-      dueDate: "2024-11-10",
-      status: "Done",
-      content: "This is a brief description of Card 2's purpose.",
-    },
-    // Add more cards as needed
-  ];
 
   return (
     <div className="bg-neutral-900 flex-1 min-h-screen max-h-screen overflow-hidden transition-all duration-300 ease-in-out p-6">
@@ -164,15 +150,15 @@ const MainContent: React.FC = () => {
             [&::-webkit-scrollbar-thumb]:transition-colors
             [&::-webkit-scrollbar-thumb]:duration-200"
         >
-          {tasks.map((task, index) => (
-        <Card
-          key={index}
-          title={task.title}
-          dueDate={task.dueDate}
-          content={task.content}
-          status={task.status}
-        />
-      ))}
+          {tasks.map((task) => (
+            <Card
+              key={task.id}
+              title={task.title}
+              dueDate={new Date(task.dueDate).toLocaleDateString('en-GB')}
+              content={task.description}
+              status={task.status === 1 ? "Pending" : "Done"}
+            />
+          ))}
         </div>
       </div>
     </div>

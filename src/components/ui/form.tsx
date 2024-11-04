@@ -31,9 +31,8 @@ export function SignUpForm() {
       });
 
       const data = await response.json();
-
-      if (response.ok) {
-        login(data.token);
+      console.log(data,response.status);
+      if (response.status===200) {
         setPopupMessage("Sign-up successful! Please log in to continue.");
       } else if (response.status === 501) {
         setPopupMessage("User already exists.");
