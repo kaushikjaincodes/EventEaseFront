@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks, setEventI
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/api/event/create', {
+      const response = await fetch('https://event-ease-woad.vercel.app/api/event/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks, setEventI
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/event/info/${userId}`, {
+        const response = await fetch(`https://event-ease-woad.vercel.app/api/event/info/${userId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -141,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks, setEventI
   const handleEventClick = async (eventId: string) => {
     setEventId(eventId);
     try {
-      const response = await fetch(`http://localhost:8080/api/task/info/${eventId}`, {
+      const response = await fetch(`https://event-ease-woad.vercel.app/api/task/info/${eventId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (response.ok) {

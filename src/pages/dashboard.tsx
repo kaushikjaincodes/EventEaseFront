@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
     try {
       console.log("UserId: "+decoded.userId); // ignore ts ka issue hai error hai :)
       setUserid(decoded.userId);
-      const response = await fetch(`http://localhost:8080/api/user/info/${decoded.userId}`, {
+      const response = await fetch(`https://event-ease-woad.vercel.app/api/user/info/${decoded.userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
