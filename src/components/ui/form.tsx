@@ -14,8 +14,8 @@ export function SignUpForm() {
   const [name, setName] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [popupMessage, setPopupMessage] = useState(""); // State for the pop-up message
-  const [showPopup, setShowPopup] = useState(false); // State for the pop-up visibility
+  const [popupMessage, setPopupMessage] = useState(""); 
+  const [showPopup, setShowPopup] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,11 +40,11 @@ export function SignUpForm() {
       } else {
         setPopupMessage("Sign-up failed: " + data.message);
       }
-      setShowPopup(true); // Show the pop-up regardless of the result
+      setShowPopup(true); 
     } catch (error) {
       console.error("Sign up error:", error);
       setPopupMessage("An error occurred. Please try again.");
-      setShowPopup(true); // Show pop-up in case of error
+      setShowPopup(true); 
     } finally {
       setLoading(false);
     }
@@ -157,15 +157,15 @@ export function SignUpForm() {
 const SignUpPopup = ({ message, onClose }: { message: string; onClose: () => void }) => {
   return (
     <>
-      {/* Overlay */}
+
       <div className="fixed inset-0 bg-black bg-opacity-75 z-40" onClick={onClose} />
 
-      {/* Popup container */}
+
       <div className="fixed inset-0 flex items-center justify-center z-50">
         <BackgroundLines className="bg-transparent flex items-center justify-center w-full px-4 -z-10">
           <div 
-            className="bg-black rounded-lg p-4 w-80 text-center z-50" // Ensure popup has a higher z-index
-            onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up to the overlay
+            className="bg-black rounded-lg p-4 w-80 text-center z-50" 
+            onClick={(e) => e.stopPropagation()} 
           >
             <p className="mt-2 text-white">{message}</p>
             <button
