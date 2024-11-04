@@ -36,7 +36,7 @@ interface FormData {
 }
 
 const MainContent: React.FC<{ 
-  tasks: { id: string; title: string; description: string; dueDate: string; status: number; }[]; 
+  tasks: { id: string; title: string; description: string; dueDate: string; status: number; users:string[] }[]; 
   eventId: string;
   userId: string;
   setTasks: (tasks: any[]) => void;
