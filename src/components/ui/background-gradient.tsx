@@ -58,7 +58,7 @@ export const BackgroundGradient = ({
             : undefined
         }
         style={{
-          backgroundSize: animate ? "400% 400%" : undefined,
+          backgroundSize: "cover",
         }}
         className={cn(
           "absolute inset-0 rounded-3xl z-[1] will-change-transform",
