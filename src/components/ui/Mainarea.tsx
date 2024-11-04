@@ -61,12 +61,13 @@ const MainContent: React.FC<{
       });
       if (response.ok) {
         const data = await response.json();
-        const formattedTasks = data.task_info.map((task: any) => ({
-          id: task._id,
-          title: task.name,
-          description: task.desc,
-          dueDate: task.due_at,
-          status: task.status,
+        const formattedTasks = data.task_info.map((taskInfo: any) => ({
+          id: taskInfo.task._id || taskInfo.task.id,
+          title: taskInfo.task.name,
+          description: taskInfo.task.desc,
+          dueDate: taskInfo.task.due_at,
+          status: taskInfo.task.status,
+          users: taskInfo.usernames,  // Array of usernames
         }));
         setTasks(formattedTasks);
       } else {
@@ -272,6 +273,7 @@ const MainContent: React.FC<{
            updateTask={updateTask}
            status={task.status} // Pass the numeric status directly
            id={task.id}
+           users={task.users}
          />         
           ))}
         </div>

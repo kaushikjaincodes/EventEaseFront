@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Button } from './button';
 import { FlipWords } from './flip-words';
 import { Input } from './input';
@@ -33,6 +33,7 @@ interface Event {
   desc: string;
   start_date: string;
   end_date: string;
+  members: string[];
 }
 
 interface SidebarProps {
@@ -50,7 +51,7 @@ interface FormData {
   members: string[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks,setEventId }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks, setEventId }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -61,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks,setEventId
   });
 
   const [words, setWords] = useState(['EventEase']);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<{ event: Event, usernames: string[] }[]>([]);
   const [submit, setSubmit] = useState(false);
   const navigate = useNavigate();
 
@@ -81,7 +82,6 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks,setEventId
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
     try {
       const response = await fetch('http://localhost:8080/api/event/create', {
         method: 'POST',
@@ -97,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks,setEventId
           name: '', 
           desc: '', 
           end_date: '', 
-          user_id: '', // Reset using userId to ensure correct ID is retained
+          user_id: '', 
           members: [] 
         });
       } else {
@@ -257,13 +257,14 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks,setEventId
         </Dialog>
       </div>
       <ul className="h-full overflow-y-auto scrollbar-hidden group-hover:scrollbar-visible flex-grow">
-        {events.map((event) => (
+        {events.map((eventInfo) => (
           <MenuItem
-            key={event._id}
-            label={event.name}
-            desc={event.desc}
-            enddate={event.end_date}
-            onClick={() => handleEventClick(event._id)}
+            key={eventInfo.event._id}
+            label={eventInfo.event.name}
+            desc={eventInfo.event.desc}
+            enddate={eventInfo.event.end_date}
+            collaborators={eventInfo.usernames.join(', ')}  // Pass usernames as collaborators
+            onClick={() => handleEventClick(eventInfo.event._id)}
           />
         ))}
       </ul>

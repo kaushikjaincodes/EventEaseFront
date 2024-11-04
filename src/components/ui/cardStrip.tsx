@@ -8,10 +8,11 @@ interface CardProps {
   content: string;
   updateTask: (id: string, status: number) => void;
   status: number; 
-  id: string; 
+  id: string;
+  users : string[]; 
 }
 
-const Card: React.FC<CardProps> = ({ id, title, dueDate, content, status, updateTask }) => {
+const Card: React.FC<CardProps> = ({ id, title, dueDate, content, status, updateTask, users }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [newStatus, setNewStatus] = useState<number>(status); 
@@ -63,7 +64,8 @@ const Card: React.FC<CardProps> = ({ id, title, dueDate, content, status, update
         className={`mt-3 text-gray-600 transition-all duration-300 ease-in-out ${isExpanded ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"}`}
         style={{ overflow: "hidden" }}
       >
-        <p>{content}</p>
+        <p className="text-gray-400 mt-1">Assigned to: {users.join(", ")}</p>
+        <p>Details: {content}</p>
         <div className="flex justify-end">
           {isEditing ? (
             <div className="flex items-center">
