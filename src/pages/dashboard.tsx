@@ -13,6 +13,7 @@ const Dashboard: React.FC = () => {
   const [username, setUsername] = useState<string>("")
   const [userid, setUserid] = useState<string>("");
   const [tasks, setTasks] = useState<any[]>([]); 
+  const [eventId, setEventId] = useState<string>("");
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
@@ -25,7 +26,7 @@ const Dashboard: React.FC = () => {
           localStorage.removeItem("token");
           navigate("/");
         } else {
-          console.log("User ID decoded:", decoded);
+          // console.log("User ID decoded:", decoded);
           fetchUserInfo(decoded);
         }
       } catch (error) {
@@ -49,7 +50,7 @@ const Dashboard: React.FC = () => {
         },
       });
       const data = await response.json();
-      console.log("User Info:", data);
+      // console.log("User Info:", data);
       setUsername(data.name);
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -59,8 +60,8 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen overflow-hidden">
       <div className="flex overflow-hidden">
-        <Sidebar userName={username} userId={userid} setTasks={setTasks} />
-        <MainContent tasks={tasks} />
+        <Sidebar userName={username} userId={userid} setTasks={setTasks} setEventId={setEventId}/>
+        <MainContent tasks={tasks} eventId={eventId} userId={userid} setTasks={setTasks} />
       </div>
     </div>
   );

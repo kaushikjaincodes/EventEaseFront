@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "./button";
 import AIChatDialog from "./AiChatDailouge";
 import Card from "./cardStrip";
 import { Input } from "./input";
-
 
 const Dialog: React.FC<{
   isOpen: boolean;
@@ -27,15 +26,61 @@ const Dialog: React.FC<{
   );
 };
 
-const MainContent: React.FC<{ tasks: { id: string; title: string; description: string; dueDate: string; status: number; }[] }> = ({ tasks }) => {
- 
+interface FormData {
+  name: string;
+  desc: string;
+  due_at: string;
+  event_id: string;
+  created_by: string;
+  assigned_to: string[];
+}
+
+const MainContent: React.FC<{ 
+  tasks: { id: string; title: string; description: string; dueDate: string; status: number; }[]; 
+  eventId: string;
+  userId: string;
+  setTasks: (tasks: any[]) => void;
+}> = ({ tasks, eventId, userId, setTasks }) => {
+  console.log("EventId: " + eventId, "UserId: " + userId);
+  const [submit1, setSubmit1] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    dueDate: ''
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    desc: '',
+    due_at: '',
+    event_id: eventId,
+    created_by: userId,
+    assigned_to: [],
   });
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+
+  const fetchTasks = async () => {
+    if (!eventId) return;
+    try {
+      const response = await fetch(`http://localhost:8080/api/task/info/${eventId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const formattedTasks = data.task_info.map((task: any) => ({
+          id: task._id,
+          title: task.name,
+          description: task.desc,
+          dueDate: task.updated_at,
+          status: task.status,
+        }));
+        setTasks(formattedTasks);
+      } else {
+        console.error("Failed to fetch tasks");
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks(); 
+  }, [eventId, submit1]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,24 +90,55 @@ const MainContent: React.FC<{ tasks: { id: string; title: string; description: s
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {  
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setIsDialogOpen(false);
-    setFormData({ title: '', description: '', dueDate: '' });
-  };
+    
+    const taskToSubmit = {
+      ...formData,
+      event_id: eventId, 
+      created_by: userId 
+    };
 
+    console.log('Task Form submitted:', taskToSubmit);
+    
+    try {
+      const response = await fetch('http://localhost:8080/api/task/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(taskToSubmit), // Use the new object
+      });
+
+      if (response.ok) {
+        setIsDialogOpen(false);
+        setFormData({ 
+          name: '', 
+          desc: '', 
+          due_at: '', 
+          event_id: eventId, // Reset with the current values
+          created_by: userId, // Reset with the current values
+          assigned_to: [] 
+        });
+        await fetchTasks(); // Refresh tasks after adding a new one
+      } else {
+        console.error('Failed to create task:', response.status);
+      }
+    } catch (error) {
+      console.error('Error creating task:', error);
+    } 
+  };
 
   return (
     <div className="bg-neutral-900 flex-1 min-h-screen max-h-screen overflow-hidden transition-all duration-300 ease-in-out p-6">
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-white">Tasks</h1>
         <div className="flex items-center gap-5">
-          <Button className="border border-gray-50  text-white hover:bg-gray-500" onClick={() => setIsAIChatOpen(true)}>Chat with AI</Button>
+          <Button className="border border-gray-50 text-white hover:bg-gray-500" onClick={() => setIsAIChatOpen(true)}>Chat with AI</Button>
           <AIChatDialog 
-  isOpen={isAIChatOpen} 
-  onClose={() => setIsAIChatOpen(false)} 
-/>
+            isOpen={isAIChatOpen} 
+            onClose={() => setIsAIChatOpen(false)} 
+          />
           <Button 
             className="bg-white text-black hover:bg-neutral-500"
             onClick={() => setIsDialogOpen(true)}
@@ -77,47 +153,64 @@ const MainContent: React.FC<{ tasks: { id: string; title: string; description: s
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="title" className="block mb-1">
+              <label htmlFor="name" className="block mb-1">
                 Task Title
               </label>
               <Input
                 type="text"
-                id="title"
-                name="title"
-                value={formData.title}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
                 className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
               />
             </div>
 
             <div>
-              <label htmlFor="description" className="block mb-1">
+              <label htmlFor="desc" className="block mb-1">
                 Description
               </label>
               <Input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description}
+                id="desc"
+                name="desc"
+                value={formData.desc}
                 onChange={handleInputChange}
                 className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
               />
             </div>
 
             <div>
-              <label htmlFor="dueDate" className="block mb-1">
+              <label htmlFor="due_at" className="block mb-1">
                 Due Date
               </label>
               <Input
                 type="date"
-                id="dueDate"
-                name="dueDate"
-                value={formData.dueDate}
+                id="due_at"
+                name="due_at"
+                value={formData.due_at}
                 onChange={handleInputChange}
                 className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
               />
             </div>
 
+            <div>
+              <label htmlFor="members" className="block mb-1">
+                Assign to (comma-separated)
+              </label>
+              <Input
+                type="text"
+                id="members"
+                name="members" 
+                value={formData.assigned_to.join(', ')}
+                onChange={(e) => setFormData({ 
+                  ...formData, 
+                  assigned_to: e.target.value.split(',').map(member => member.trim())
+                })} 
+                className="w-full border rounded p-2 bg-neutral-800 text-white border-neutral-700 focus:outline-none focus:border-white"
+              />
+            </div>
+            
             <div className="flex justify-end gap-2 mt-6">
               <button
                 type="button"
@@ -136,7 +229,7 @@ const MainContent: React.FC<{ tasks: { id: string; title: string; description: s
           </div>
         </form>
       </Dialog>
-      
+
       <div className="h-full max-h-[calc(100vh-96px)] overflow-hidden relative">
         <div 
           className="flex flex-col space-y-4 h-full pr-2 overflow-y-scroll relative

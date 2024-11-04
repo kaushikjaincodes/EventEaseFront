@@ -38,6 +38,7 @@ interface Event {
 interface SidebarProps {
   userName: string;
   userId: string;
+  setEventId: (eventId: string) => void;
   setTasks: (tasks: any[]) => void; 
 }
 
@@ -49,7 +50,7 @@ interface FormData {
   members: string[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks,setEventId }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -138,6 +139,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks }) => {
   }, [userId]);
 
   const handleEventClick = async (eventId: string) => {
+    setEventId(eventId);
     try {
       const response = await fetch(`http://localhost:8080/api/task/info/${eventId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
