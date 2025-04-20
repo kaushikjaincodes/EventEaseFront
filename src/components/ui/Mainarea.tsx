@@ -223,7 +223,7 @@ const MainContent: React.FC<{
                 type="text"
                 id="members"
                 name="members" 
-                value={formData.assigned_to.join(', ')}
+                value={(formData.assigned_to || []).join(', ')}
                 onChange={(e) => setFormData({ 
                   ...formData, 
                   assigned_to: e.target.value.split(',').map(member => member.trim())
