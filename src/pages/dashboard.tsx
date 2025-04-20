@@ -6,7 +6,7 @@ import MainContent from "../components/ui/Mainarea";
 
 
 interface CustomJwtPayload extends JwtPayload {
-  userId: string;
+  user_id: string;
 }
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -42,9 +42,9 @@ const Dashboard: React.FC = () => {
 
   const fetchUserInfo = async (decoded: CustomJwtPayload) => {
     try {
-      console.log("UserId: "+decoded.userId); // ignore ts ka issue hai error hai :)
-      setUserid(decoded.userId);
-      const response = await fetch(`https://event-ease-woad.vercel.app/api/user/info/${decoded.userId}`, {
+      console.log("UserId: "+decoded.user_id); // ignore ts ka issue hai error hai :)
+      setUserid(decoded.user_id);
+      const response = await fetch(`https://eventease-lksm.onrender.com/api/user/info/${decoded.user_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

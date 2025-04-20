@@ -22,7 +22,7 @@ export function SignUpForm() {
     setLoading(true);
     console.log(email + " " + password + " " + name);
     try {
-      const response = await fetch("https://event-ease-woad.vercel.app/api/user/signup", {
+      const response = await fetch("https://eventease-lksm.onrender.com/api/user/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export function SignUpForm() {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://event-ease-woad.vercel.app/api/user/signin", {
+      const response = await fetch("https://eventease-lksm.onrender.com/api/user/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

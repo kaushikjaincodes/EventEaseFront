@@ -56,7 +56,7 @@ const MainContent: React.FC<{
   const fetchTasks = async () => {
     if (!eventId) return;
     try {
-      const response = await fetch(`https://event-ease-woad.vercel.app/api/task/info/${eventId}`, {
+      const response = await fetch(`https://eventease-lksm.onrender.com/api/task/info/${eventId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (response.ok) {
@@ -102,7 +102,7 @@ const MainContent: React.FC<{
     console.log('Task Form submitted:', taskToSubmit);
     
     try {
-      const response = await fetch('https://event-ease-woad.vercel.app/api/task/create', {
+      const response = await fetch('https://eventease-lksm.onrender.com/api/task/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ const MainContent: React.FC<{
 
   const updateTask = async (id: string, newStatus: number) => {
     try {
-      const response = await fetch(`https://event-ease-woad.vercel.app/api/task/update`, {
+      const response = await fetch(`https://eventease-lksm.onrender.com/api/task/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

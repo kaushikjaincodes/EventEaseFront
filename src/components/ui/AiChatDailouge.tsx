@@ -39,7 +39,7 @@ const AIChatDialog: React.FC<{
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://event-ease-woad.vercel.app/api/chat/send", {
+      const response = await fetch("https://eventease-lksm.onrender.com/api/chat/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: inputValue }),
