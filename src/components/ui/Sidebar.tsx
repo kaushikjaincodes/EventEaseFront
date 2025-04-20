@@ -228,7 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks, setEventI
                   type="text"
                   id="members"
                   name="members" 
-                  value={formData.members.join(', ')}
+                  value={(formData.members || []).join(', ')}
                   onChange={(e) => setFormData({ 
                     ...formData, 
                     members: e.target.value.split(',').map(member => member.trim())
@@ -263,7 +263,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userName, userId, setTasks, setEventI
             label={eventInfo.event.name}
             desc={eventInfo.event.desc}
             enddate={eventInfo.event.end_date}
-            collaborators={eventInfo.usernames.join(', ')}  // Pass usernames as collaborators
+            collaborators={(eventInfo.usernames || []).join(', ')}  // Pass usernames as collaborators
             onClick={() => handleEventClick(eventInfo.event._id)}
           />
         ))}

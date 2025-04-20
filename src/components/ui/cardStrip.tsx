@@ -64,7 +64,7 @@ const Card: React.FC<CardProps> = ({ id, title, dueDate, content, status, update
         className={`mt-3 text-gray-600 transition-all duration-300 ease-in-out ${isExpanded ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"}`}
         style={{ overflow: "hidden" }}
       >
-        <p className="text-gray-400 mt-1">Assigned to: {users.join(", ")}</p>
+        <p className="text-gray-400 mt-1">Assigned to: {(users || []).join(", ")}</p>
         <p>Details: {content}</p>
         <div className="flex justify-end">
           {isEditing ? (
